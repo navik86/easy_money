@@ -1,11 +1,13 @@
 from django.urls import path
 
-from wallets.views import WalletDetailView, WalletListCreateView
+from wallets.views import (TransactionDetailView, TransactionListCreateView,
+                           WalletDetailView, WalletListCreateView,
+                           WalletTransactionsView)
 
 urlpatterns = [
     path('', WalletListCreateView.as_view(), name="wallets_list"),
     path('<str:name>/', WalletDetailView.as_view(), name="specific_wallet"),
-    # path('transactions/', ),
-    # path('transactions/<int:transaction_id>/', ),
-    # path('transactions/<str:wallet_name>/', ),
+    path('transactions/', TransactionListCreateView.as_view()),
+    path('transactions/<int:transaction_id>/', TransactionDetailView.as_view()),
+    path('transactions/<str:wallet_name>/', WalletTransactionsView.as_view()),
 ]
