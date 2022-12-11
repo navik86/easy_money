@@ -1,13 +1,18 @@
 from django.db import models
 from django.conf import settings
+import random
+import string
 
 
 User = settings.AUTH_USER_MODEL
 
 
-CARDS = [('Visa', 'Visa'), ('Mastercard', 'Mastercard')]
+CARDS = [("Visa", "Visa"), ("Mastercard", "Mastercard")]
 CURRENCIES = [("USD", "USD"), ("EUR", "EUR"), ("RUB", "RUB")]
 STATUSES = [("PAID", "PAID"), ("FAILED", "FAILED")]
+WALLET_NAME_LENGTH = 8
+MAX_NUMBER_OF_WALLETS = 5
+BONUSES = {"USD": 3.00, "EUR": 3.00, "RUB": 100.00}
 
 
 class Wallet(models.Model):
@@ -25,6 +30,15 @@ class Wallet(models.Model):
 
     def __str__(self):
         return f"Owner: {self.owner}, wallet: {self.name}"
+
+    @classmethod
+    def create_wallet_name(cls) -> str:
+        name = "".join(
+            random.SystemRandom().
+            choice(string.ascii_uppercase + string.digits)
+            for _ in range(WALLET_NAME_LENGTH)
+        )
+        return name
 
 
 class Transaction(models.Model):
