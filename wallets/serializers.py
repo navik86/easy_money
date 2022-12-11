@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Wallet, CARDS, CURRENCIES
+
+from .models import CARDS, CURRENCIES, Wallet
 
 
 class WalletSerializer(serializers.ModelSerializer):

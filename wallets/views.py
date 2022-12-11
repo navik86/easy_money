@@ -1,8 +1,9 @@
-from rest_framework.generics import GenericAPIView
-from .serializers import WalletSerializer
-import services
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
+
+from . import services
+from .serializers import WalletSerializer
 
 
 class WalletListCreateView(GenericAPIView):
@@ -22,3 +23,16 @@ class WalletListCreateView(GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class WalletDetailView(GenericAPIView):
+
+    serializer_class = WalletSerializer
+
+    def get(self, request, name, format=None):
+        wallet = services.get_specific_wallet(name)
+        serializer = WalletSerializer(wallet)
+        return Response(serializer.data)
+
+    def delete(self, request, name, format=None):
+        wallet = services.get_specific_wallet(name)
+        wallet.delete()
+        return Response(f"Wallet {name} deleted", status=status.HTTP_204_NO_CONTENT)

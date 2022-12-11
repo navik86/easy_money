@@ -1,5 +1,7 @@
-from .models import Wallet, WALLET_NAME_LENGTH, MAX_NUMBER_OF_WALLETS, BONUSES
 from django.core.exceptions import ValidationError
+from django.http import Http404
+
+from .models import BONUSES, MAX_NUMBER_OF_WALLETS, WALLET_NAME_LENGTH, Wallet
 
 
 def get_user_wallets(user):
@@ -24,3 +26,10 @@ def create_wallet(validated_data, user):
         owner=user
     )
     return wallet
+
+
+def get_specific_wallet(name):
+    try:
+        return Wallet.objects.get(name=name)
+    except Wallet.DoesNotExist:
+        raise Http404
