@@ -39,6 +39,9 @@ class TransactionSerializer(serializers.ModelSerializer):
     sender = serializers.CharField(
         source="sender.name", max_length=WALLET_NAME_LENGTH
     )
+    transfer_amount = serializers.DecimalField(
+        max_digits=10, decimal_places=2, default=0.10
+    )
     
     class Meta:
         model = Transaction

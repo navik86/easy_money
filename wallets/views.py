@@ -30,23 +30,18 @@ class WalletDetailView(GenericAPIView):
     lookup_field = "name"
 
     def get(self, request, name, format=None):
-        wallet = services.get_specific_wallet(name)
+        wallet = services.get_specific_user_wallet(self.request.user, name)
         serializer = WalletSerializer(wallet)
         return Response(serializer.data)
 
     def delete(self, request, name, format=None):
-        wallet = services.get_specific_wallet(name)
+        wallet = services.get_specific_user_wallet(self.request.user, name)
         wallet.delete()
         return Response(f"Wallet {name} deleted", status=status.HTTP_204_NO_CONTENT)
 
 
 class TransactionListCreateView(GenericAPIView):
     
-    permission_classes = [
-        IsAuthenticated,
-        permissions.PostOrSafeMethodsOnly,
-        permissions.SenderWalletOwnerPermission,
-    ]
     serializer_class = TransactionSerializer
     lookup_field = "id"
 
@@ -58,7 +53,7 @@ class TransactionListCreateView(GenericAPIView):
     def post(self, request, format=None):
         serializer = TransactionSerializer(data=request.data)
         if serializer.is_valid():
-            services.create_transaction(serializer.validated_data)   	
+            services.create_transaction(self.request.user, serializer.validated_data)   	
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -66,7 +61,7 @@ class TransactionListCreateView(GenericAPIView):
 class TransactionDetailView(GenericAPIView):
 
     def get(self, request, transaction_id, format=None):
-        transaction = services.get_specific_transaction(transaction_id)
+        transaction = services.get_specific_transaction(self.request.user, transaction_id)
         serializer = TransactionSerializer(transaction)
         return Response(serializer.data)
 
@@ -74,6 +69,6 @@ class TransactionDetailView(GenericAPIView):
 class WalletTransactionsView(GenericAPIView):
     
     def get(self, request, wallet_name, format=None):
-        transaction = services.get_wallet_transactions(wallet_name)
+        transaction = services.get_wallet_transactions(self.request.user, wallet_name)
         serializer = TransactionSerializer(transaction, many=True)
         return Response(serializer.data)

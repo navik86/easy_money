@@ -10,8 +10,10 @@ from .models import (BONUSES, DEFAULT_COMMISSION, MAX_NUMBER_OF_WALLETS,
 
 
 def get_user_wallets(user):
-    return Wallet.objects.filter(owner=user)
-
+    try:
+        return Wallet.objects.filter(owner=user)
+    except Wallet.DoesNotExist:
+        raise Http404
 
 def create_wallet(validated_data, user):
     
@@ -33,11 +35,11 @@ def create_wallet(validated_data, user):
     return wallet
 
 
-def get_specific_wallet(name):
-    try:
-        return Wallet.objects.get(name=name)
-    except Wallet.DoesNotExist:
-        raise Http404
+# def get_specific_wallet(name):
+#     try:
+#         return Wallet.objects.get(name=name)
+#     except Wallet.DoesNotExist:
+#         raise Http404
 
 
 def create_transaction(validated_data):
@@ -94,4 +96,10 @@ def get_wallet_transactions(name):
         Q(receiver__name=wallet.name) | Q(sender__name=wallet.name)
     )
     return wallet_transactions
-    
+
+
+def get_specific_user_wallet(user, name):
+    try:
+        return user.wallet_set.get(name=name)
+    except Wallet.DoesNotExist:
+        raise Http404
