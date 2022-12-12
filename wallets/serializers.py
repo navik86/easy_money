@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 
 from . import services
-from .models import DEFAULT_COMMISSION, WALLET_NAME_LENGTH, Wallet
+from .models import DEFAULT_COMMISSION, WALLET_NAME_LENGTH, Transaction, Wallet
 
 
 class WalletSerializer(serializers.ModelSerializer):
@@ -41,7 +41,7 @@ class TransactionSerializer(serializers.ModelSerializer):
     )
     
     class Meta:
-        model = Wallet
+        model = Transaction
         fields = '__all__'
         read_only_fields = ("id", "status", "commission")
 
@@ -59,7 +59,8 @@ class TransactionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Currencies of wallets are not equal")
 
         ratio = round(decimal.Decimal(1.00 + DEFAULT_COMMISSION), 2)
-        text_exep = "Sender wallet doesn't have enough funds for transaction""
+        text_exep = "Sender wallet doesn't have enough funds for transaction"
+
         if sender.user == receiver.user:
             if sender.balance < data["transfer_amount"]:
                 raise serializers.ValidationError(text_exep)

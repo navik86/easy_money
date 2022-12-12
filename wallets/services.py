@@ -74,8 +74,24 @@ def create_transaction(validated_data):
 
 
 def get_user_transactions(user):
-    user_wallet = user.wallet_set.all()
+    user_wallets = user.wallet_set.all()
     user_transactions = Transaction.objects.filter(
-        Q(receiver__in=user_wallet) | Q(sender__in=user_wallet)
+        Q(receiver__in=user_wallets) | Q(sender__in=user_wallets)
     )
     return user_transactions
+
+
+def get_specific_transaction(id):
+    try:
+        return Transaction.objects.get(id=id)
+    except Transaction.DoesNotExist:
+        raise Http404
+
+
+def get_wallet_transactions(name):
+    wallet = get_specific_wallet(name)
+    wallet_transactions = Transaction.objects.filter(
+        Q(receiver__name=wallet.name) | Q(sender__name=wallet.name)
+    )
+    return wallet_transactions
+    

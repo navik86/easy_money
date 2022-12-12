@@ -47,7 +47,7 @@ class Transaction(models.Model):
     sender = models.ForeignKey(Wallet, related_name="senders", on_delete=models.RESTRICT)
     receiver = models.ForeignKey(Wallet, related_name="receivers", on_delete=models.RESTRICT)
     transfer_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.10)
-    commision = models.DecimalField(max_digits=10, decimal_places=2, default=0.10)
+    commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.10)
     status = models.CharField(max_length=10, choices=STATUSES)
     timestamp = models.DateField(auto_now_add=True)
 
