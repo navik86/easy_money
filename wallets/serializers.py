@@ -8,6 +8,7 @@ from .models import DEFAULT_COMMISSION, WALLET_NAME_LENGTH, Transaction, Wallet
 
 
 class WalletSerializer(serializers.ModelSerializer):
+    """Serializer for wallet validation"""
 
     type = serializers.CharField(max_length=10)
     currency = serializers.CharField(max_length=3)
@@ -32,6 +33,7 @@ class WalletSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    """Serializer for transaction validation"""
 
     receiver = serializers.CharField(
         source="receiver.name", max_length=WALLET_NAME_LENGTH

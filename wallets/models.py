@@ -17,6 +17,7 @@ DEFAULT_COMMISSION = 0.10
 
 
 class Wallet(models.Model):
+    """Wallet model"""
 
     name = models.CharField(max_length=8,unique=True)
     type = models.CharField(choices=CARDS, max_length=20)
@@ -29,7 +30,7 @@ class Wallet(models.Model):
     class Meta:
         ordering = ["modified_on"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Owner: {self.owner}, wallet: {self.name}"
 
     @classmethod
@@ -43,6 +44,7 @@ class Wallet(models.Model):
 
 
 class Transaction(models.Model):
+    """Transaction model"""
     
     sender = models.ForeignKey(Wallet, related_name="senders", on_delete=models.RESTRICT)
     receiver = models.ForeignKey(Wallet, related_name="receivers", on_delete=models.RESTRICT)
@@ -54,5 +56,5 @@ class Transaction(models.Model):
     class Meta:
         ordering = ["timestamp"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Transaction: {self.pk}; sender: {self.sender}; receiver: {self.receiver}"

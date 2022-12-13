@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.http import Http404
-from django.db.models.query import QuerySet
 
 from .models import (BONUSES, DEFAULT_COMMISSION, MAX_NUMBER_OF_WALLETS,
                      Transaction, Wallet)
@@ -95,12 +94,12 @@ def get_user_transactions(user):
     return user_transactions
 
 
-def get_specific_transaction(user, id):
+def get_specific_transaction(user, transaction_id):
     user_wallets = user.wallet_set.all()
     try:
         transaction = Transaction.objects.filter(
         Q(receiver__in=user_wallets) | Q(sender__in=user_wallets)
-    ).get(id=id)
+    ).get(id=transaction_id)
         return transaction
     except Transaction.DoesNotExist:
         raise Http404
