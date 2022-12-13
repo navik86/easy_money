@@ -7,15 +7,16 @@ from .serializers import TransactionSerializer, WalletSerializer
 
 
 class WalletListCreateView(GenericAPIView):
+    """View handle GET, POST requests to list of wallet"""
 
     serializer_class = WalletSerializer
 
-    def get(self, request, format=None):
-        wallets = services.get_user_wallets(self.request.user)
+    def get(self, request):
+        wallets = services.get_user_wallets(request.user)
         serializer = WalletSerializer(wallets, many=True)
         return Response(serializer.data)
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = WalletSerializer(data=request.data)
         if serializer.is_valid():
             services.create_wallet(self.request.user, serializer.validated_data)   	
@@ -24,32 +25,34 @@ class WalletListCreateView(GenericAPIView):
 
 
 class WalletDetailView(GenericAPIView):
+    """View handle GET, DELETE requests to wallet"""
 
     serializer_class = WalletSerializer
     lookup_field = "name"
 
-    def get(self, request, name, format=None):
-        wallet = services.get_specific_user_wallet(self.request.user, name)
+    def get(self, request, name):
+        wallet = services.get_specific_user_wallet(request.user, name)
         serializer = WalletSerializer(wallet)
         return Response(serializer.data)
 
-    def delete(self, request, name, format=None):
-        wallet = services.get_specific_user_wallet(self.request.user, name)
+    def delete(self, request, name):
+        wallet = services.get_specific_user_wallet(request.user, name)
         services.delete_specific_wallet(wallet)
         return Response(f"Wallet {name} deleted", status=status.HTTP_204_NO_CONTENT)
 
 
 class TransactionListCreateView(GenericAPIView):
+    """View handle GET, POST requests to list of transaction"""
     
     serializer_class = TransactionSerializer
     lookup_field = "id"
 
-    def get(self, request, format=None):
-        transaction = services.get_user_transactions(self.request.user)
+    def get(self, request):
+        transaction = services.get_user_transactions(request.user)
         serializer = TransactionSerializer(transaction, many=True)
         return Response(serializer.data)
 
-    def post(self, request, format=None):
+    def post(self, request):
         serializer = TransactionSerializer(data=request.data)
         if serializer.is_valid():
             services.create_transaction(self.request.user, serializer.validated_data)   	
@@ -58,16 +61,18 @@ class TransactionListCreateView(GenericAPIView):
 
 
 class TransactionDetailView(GenericAPIView):
+    """View handle GET requests to transaction"""
 
-    def get(self, request, transaction_id, format=None):
-        transaction = services.get_specific_transaction(self.request.user, transaction_id)
+    def get(self, request, transaction_id):
+        transaction = services.get_specific_transaction(request.user, transaction_id)
         serializer = TransactionSerializer(transaction)
         return Response(serializer.data)
 
 
 class WalletTransactionsView(GenericAPIView):
+    """View handle GET requests to list of transaction specific wallet"""
     
-    def get(self, request, wallet_name, format=None):
-        transaction = services.get_wallet_transactions(self.request.user, wallet_name)
+    def get(self, request, wallet_name):
+        transaction = services.get_wallet_transactions(request.user, wallet_name)
         serializer = TransactionSerializer(transaction, many=True)
         return Response(serializer.data)

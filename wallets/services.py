@@ -64,7 +64,6 @@ def create_transaction(user, validated_data):
         commission = DEFAULT_COMMISSION
 
     ratio = round(decimal.Decimal(1.00 + commission), 2)
-
     transfer_amount_with_fee = validated_data["transfer_amount"] * ratio
 
     transaction_ = Transaction.objects.create(

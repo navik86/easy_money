@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 
 from . import services
-from .models import DEFAULT_COMMISSION, WALLET_NAME_LENGTH, Transaction, Wallet
+from .models import DEFAULT_COMMISSION, Transaction, WALLET_NAME_LENGTH, Wallet
 
 
 class WalletSerializer(serializers.ModelSerializer):

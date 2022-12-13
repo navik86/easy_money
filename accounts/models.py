@@ -4,6 +4,7 @@ from django.db import models
 
 
 class CustomUserManager(BaseUserManager):
+    """Custom usermanager"""
 
     def create_user(self, email, password, **extra_fields):
         if not email:
@@ -28,16 +29,18 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    """User model"""
+    
     username = models.CharField(
         max_length=150,
         unique=True,
         blank=True, 
         null=True,
-    )
+    )    
     email = models.EmailField(max_length=255, unique=True)
-
+    
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
-
+    
     objects = CustomUserManager()
