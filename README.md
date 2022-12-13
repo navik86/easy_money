@@ -8,3 +8,6 @@
 
 ## Get endpoints 
 - ```http://127.0.0.1:8000/swagger/```
+
+
+![Alt text](endpoints.jpg?raw=true "Optional Title")

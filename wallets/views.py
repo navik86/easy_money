@@ -1,9 +1,8 @@
-from rest_framework import permissions, status
+from rest_framework import status
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from . import permissions, services
+from . import services
 from .serializers import TransactionSerializer, WalletSerializer
 
 
@@ -19,7 +18,7 @@ class WalletListCreateView(GenericAPIView):
     def post(self, request, format=None):
         serializer = WalletSerializer(data=request.data)
         if serializer.is_valid():
-            services.create_wallet(serializer.validated_data, self.request.user)   	
+            services.create_wallet(self.request.user, serializer.validated_data)   	
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -36,7 +35,7 @@ class WalletDetailView(GenericAPIView):
 
     def delete(self, request, name, format=None):
         wallet = services.get_specific_user_wallet(self.request.user, name)
-        wallet.delete()
+        services.delete_specific_wallet(wallet)
         return Response(f"Wallet {name} deleted", status=status.HTTP_204_NO_CONTENT)
 
 

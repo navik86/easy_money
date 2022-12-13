@@ -4,19 +4,36 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.http import Http404
+from django.db.models.query import QuerySet
 
 from .models import (BONUSES, DEFAULT_COMMISSION, MAX_NUMBER_OF_WALLETS,
                      Transaction, Wallet)
 
 
 def get_user_wallets(user):
+    user_wallets = user.wallet_set.all()
+    return user_wallets
+
+
+def get_specific_user_wallet(user, name: str):
     try:
-        return Wallet.objects.filter(owner=user)
+        return user.wallet_set.get(name=name)
     except Wallet.DoesNotExist:
         raise Http404
 
-def create_wallet(validated_data, user):
-    
+
+def get_specific_wallet(name: str):
+    try:
+        return Wallet.objects.get(name=name)
+    except Wallet.DoesNotExist:
+        raise Http404
+
+
+def delete_specific_wallet(wallet) -> None:
+    wallet.delete()
+
+
+def create_wallet(user, validated_data): 
     count = Wallet.objects.filter(owner=user).count()
 
     if count >= MAX_NUMBER_OF_WALLETS:
@@ -35,19 +52,14 @@ def create_wallet(validated_data, user):
     return wallet
 
 
-# def get_specific_wallet(name):
-#     try:
-#         return Wallet.objects.get(name=name)
-#     except Wallet.DoesNotExist:
-#         raise Http404
-
-
-def create_transaction(validated_data):
-
+def create_transaction(user, validated_data):
     sender = validated_data["sender"]
     receiver = validated_data["receiver"]
 
-    if sender.user == receiver.user:
+    if sender.owner != user:
+        raise ValidationError(f"You have no wallet: {sender.name}")
+
+    if sender.owner == receiver.owner:
         commission = 0.00
     else:
         commission = DEFAULT_COMMISSION
@@ -83,23 +95,20 @@ def get_user_transactions(user):
     return user_transactions
 
 
-def get_specific_transaction(id):
+def get_specific_transaction(user, id):
+    user_wallets = user.wallet_set.all()
     try:
-        return Transaction.objects.get(id=id)
+        transaction = Transaction.objects.filter(
+        Q(receiver__in=user_wallets) | Q(sender__in=user_wallets)
+    ).get(id=id)
+        return transaction
     except Transaction.DoesNotExist:
         raise Http404
 
 
-def get_wallet_transactions(name):
-    wallet = get_specific_wallet(name)
+def get_wallet_transactions(user, name):
+    wallet = user.wallet_set.get(name=name)
     wallet_transactions = Transaction.objects.filter(
         Q(receiver__name=wallet.name) | Q(sender__name=wallet.name)
     )
     return wallet_transactions
-
-
-def get_specific_user_wallet(user, name):
-    try:
-        return user.wallet_set.get(name=name)
-    except Wallet.DoesNotExist:
-        raise Http404

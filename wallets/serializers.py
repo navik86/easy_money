@@ -39,9 +39,6 @@ class TransactionSerializer(serializers.ModelSerializer):
     sender = serializers.CharField(
         source="sender.name", max_length=WALLET_NAME_LENGTH
     )
-    transfer_amount = serializers.DecimalField(
-        max_digits=10, decimal_places=2, default=0.10
-    )
     
     class Meta:
         model = Transaction
@@ -49,7 +46,6 @@ class TransactionSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "status", "commission")
 
     def validate(self, data):
- 
         receiver = services.get_specific_wallet(data["receiver"]["name"])
         sender = services.get_specific_wallet(data["sender"]["name"])
 
@@ -64,7 +60,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         ratio = round(decimal.Decimal(1.00 + DEFAULT_COMMISSION), 2)
         text_exep = "Sender wallet doesn't have enough funds for transaction"
 
-        if sender.user == receiver.user:
+        if sender.owner == receiver.owner:
             if sender.balance < data["transfer_amount"]:
                 raise serializers.ValidationError(text_exep)
         else:
