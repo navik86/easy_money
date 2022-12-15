@@ -36,8 +36,7 @@ class Wallet(models.Model):
     @classmethod
     def create_wallet_name(cls) -> str:
         name = "".join(
-            random.SystemRandom().
-            choice(string.ascii_uppercase + string.digits)
+            random.SystemRandom().choice(string.ascii_uppercase + string.digits)
             for _ in range(WALLET_NAME_LENGTH)
         )
         return name
@@ -46,8 +45,12 @@ class Wallet(models.Model):
 class Transaction(models.Model):
     """Transaction model"""
 
-    sender = models.ForeignKey(Wallet, related_name="senders", on_delete=models.RESTRICT)
-    receiver = models.ForeignKey(Wallet, related_name="receivers", on_delete=models.RESTRICT)
+    sender = models.ForeignKey(
+        Wallet, related_name="senders", on_delete=models.RESTRICT
+    )
+    receiver = models.ForeignKey(
+        Wallet, related_name="receivers", on_delete=models.RESTRICT
+    )
     transfer_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.10)
     commission = models.DecimalField(max_digits=10, decimal_places=2, default=0.10)
     status = models.CharField(max_length=10, choices=STATUSES)
@@ -57,4 +60,6 @@ class Transaction(models.Model):
         ordering = ["timestamp"]
 
     def __str__(self) -> str:
-        return f"Transaction: {self.pk}; sender: {self.sender}; receiver: {self.receiver}"
+        return (
+            f"Transaction: {self.pk}; sender: {self.sender}; receiver: {self.receiver}"
+        )

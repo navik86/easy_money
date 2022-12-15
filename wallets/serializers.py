@@ -15,7 +15,7 @@ class WalletSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Wallet
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = ("name", "balance", "owner")
 
     def validate(self, attrs):
@@ -38,13 +38,11 @@ class TransactionSerializer(serializers.ModelSerializer):
     receiver = serializers.CharField(
         source="receiver.name", max_length=WALLET_NAME_LENGTH
     )
-    sender = serializers.CharField(
-        source="sender.name", max_length=WALLET_NAME_LENGTH
-    )
+    sender = serializers.CharField(source="sender.name", max_length=WALLET_NAME_LENGTH)
 
     class Meta:
         model = Transaction
-        fields = '__all__'
+        fields = "__all__"
         read_only_fields = ("id", "status", "commission")
 
     def validate(self, attrs):

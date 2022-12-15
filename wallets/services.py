@@ -5,8 +5,13 @@ from django.db import transaction
 from django.db.models import Q
 from django.http import Http404
 
-from .models import (BONUSES, DEFAULT_COMMISSION, MAX_NUMBER_OF_WALLETS,
-                     Transaction, Wallet)
+from .models import (
+    BONUSES,
+    DEFAULT_COMMISSION,
+    MAX_NUMBER_OF_WALLETS,
+    Transaction,
+    Wallet,
+)
 
 
 def get_user_wallets(user):
@@ -46,7 +51,7 @@ def create_wallet(user, validated_data):
         name=name,
         **validated_data,
         balance=BONUSES[validated_data["currency"]],
-        owner=user
+        owner=user,
     )
     return wallet
 
@@ -97,8 +102,8 @@ def get_specific_transaction(user, transaction_id):
     user_wallets = user.wallet_set.all()
     try:
         transaction = Transaction.objects.filter(
-        Q(receiver__in=user_wallets) | Q(sender__in=user_wallets)
-    ).get(id=transaction_id)
+            Q(receiver__in=user_wallets) | Q(sender__in=user_wallets)
+        ).get(id=transaction_id)
         return transaction
     except Transaction.DoesNotExist:
         raise Http404
