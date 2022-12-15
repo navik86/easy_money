@@ -45,7 +45,7 @@ class Wallet(models.Model):
 
 class Transaction(models.Model):
     """Transaction model"""
-    
+
     sender = models.ForeignKey(Wallet, related_name="senders", on_delete=models.RESTRICT)
     receiver = models.ForeignKey(Wallet, related_name="receivers", on_delete=models.RESTRICT)
     transfer_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.10)

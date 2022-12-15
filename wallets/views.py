@@ -19,7 +19,7 @@ class WalletListCreateView(GenericAPIView):
     def post(self, request):
         serializer = WalletSerializer(data=request.data)
         if serializer.is_valid():
-            services.create_wallet(self.request.user, serializer.validated_data)   	
+            services.create_wallet(self.request.user, serializer.validated_data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -28,7 +28,6 @@ class WalletDetailView(GenericAPIView):
     """View handle GET, DELETE requests to wallet"""
 
     serializer_class = WalletSerializer
-    lookup_field = "name"
 
     def get(self, request, name):
         wallet = services.get_specific_user_wallet(request.user, name)
@@ -43,9 +42,8 @@ class WalletDetailView(GenericAPIView):
 
 class TransactionListCreateView(GenericAPIView):
     """View handle GET, POST requests to list of transaction"""
-    
+
     serializer_class = TransactionSerializer
-    lookup_field = "id"
 
     def get(self, request):
         transaction = services.get_user_transactions(request.user)
@@ -55,7 +53,7 @@ class TransactionListCreateView(GenericAPIView):
     def post(self, request):
         serializer = TransactionSerializer(data=request.data)
         if serializer.is_valid():
-            services.create_transaction(self.request.user, serializer.validated_data)   	
+            services.create_transaction(self.request.user, serializer.validated_data)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -71,7 +69,7 @@ class TransactionDetailView(GenericAPIView):
 
 class WalletTransactionsView(GenericAPIView):
     """View handle GET requests to list of transaction specific wallet"""
-    
+
     def get(self, request, wallet_name):
         transaction = services.get_wallet_transactions(request.user, wallet_name)
         serializer = TransactionSerializer(transaction, many=True)

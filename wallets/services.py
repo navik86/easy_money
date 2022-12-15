@@ -32,7 +32,7 @@ def delete_specific_wallet(wallet) -> None:
     wallet.delete()
 
 
-def create_wallet(user, validated_data): 
+def create_wallet(user, validated_data):
     count = Wallet.objects.filter(owner=user).count()
 
     if count >= MAX_NUMBER_OF_WALLETS:

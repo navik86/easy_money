@@ -4,7 +4,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 
 from . import services
-from .models import DEFAULT_COMMISSION, Transaction, WALLET_NAME_LENGTH, Wallet
+from .models import DEFAULT_COMMISSION, WALLET_NAME_LENGTH, Transaction, Wallet
 
 
 class WalletSerializer(serializers.ModelSerializer):
@@ -18,18 +18,18 @@ class WalletSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ("name", "balance", "owner")
 
-    def validate(self, data):
-        if data["type"] not in ["Visa", "Mastercard"]:
+    def validate(self, attrs):
+        if attrs["type"] not in ["Visa", "Mastercard"]:
             raise serializers.ValidationError(
-                f"{data['type']} wrong choice for wallet type. "
+                f"{attrs['type']} wrong choice for wallet type. "
                 f"Please choose Visa or Mastercard."
             )
-        if data["currency"] not in ["USD", "EUR", "RUB"]:
+        if attrs["currency"] not in ["USD", "EUR", "RUB"]:
             raise serializers.ValidationError(
-                f"{data['currency']} wrong choice for wallet currency. "
+                f"{attrs['currency']} wrong choice for wallet currency. "
                 f"Please choose USD, EUR or RUB."
             )
-        return data
+        return attrs
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -41,15 +41,15 @@ class TransactionSerializer(serializers.ModelSerializer):
     sender = serializers.CharField(
         source="sender.name", max_length=WALLET_NAME_LENGTH
     )
-    
+
     class Meta:
         model = Transaction
         fields = '__all__'
         read_only_fields = ("id", "status", "commission")
 
-    def validate(self, data):
-        receiver = services.get_specific_wallet(data["receiver"]["name"])
-        sender = services.get_specific_wallet(data["sender"]["name"])
+    def validate(self, attrs):
+        receiver = services.get_specific_wallet(attrs["receiver"]["name"])
+        sender = services.get_specific_wallet(attrs["sender"]["name"])
 
         if not receiver:
             raise NotFound(detail="Receiver wallet doesn't exist", code=404)
@@ -63,13 +63,13 @@ class TransactionSerializer(serializers.ModelSerializer):
         text_exep = "Sender wallet doesn't have enough funds for transaction"
 
         if sender.owner == receiver.owner:
-            if sender.balance < data["transfer_amount"]:
+            if sender.balance < attrs["transfer_amount"]:
                 raise serializers.ValidationError(text_exep)
         else:
-            if sender.balance < data["transfer_amount"] * ratio:
+            if sender.balance < attrs["transfer_amount"] * ratio:
                 raise serializers.ValidationError(text_exep)
 
-        data["receiver"] = receiver
-        data["sender"] = sender
+        attrs["receiver"] = receiver
+        attrs["sender"] = sender
 
-        return data
+        return attrs
