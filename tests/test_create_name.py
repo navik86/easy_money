@@ -1,6 +1,6 @@
-from wallets.models import Wallet
 from alphabet_detector import AlphabetDetector
 
+from wallets.models import Wallet
 
 
 def test_create_wallet_name():
@@ -9,6 +9,6 @@ def test_create_wallet_name():
     ad = AlphabetDetector()
 
     assert len(wallet_name) == 8
-    assert any (char.isdigit() for char in wallet_name) == True
+    assert any(char.isdigit() for char in wallet_name) == True
     assert ad.only_alphabet_chars(wallet_name, "LATIN") == True
     assert ad.only_alphabet_chars(wallet_name, "CYRILLIC") == False
