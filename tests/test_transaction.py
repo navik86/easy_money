@@ -1,9 +1,10 @@
 import pytest
-from accounts.models import User
-from wallets.models import Wallet, Transaction, DEFAULT_COMMISSION
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
-from wallets.serializers import WalletSerializer, TransactionSerializer
+
+from accounts.models import User
+from wallets.models import DEFAULT_COMMISSION, Transaction, Wallet
+from wallets.serializers import TransactionSerializer, WalletSerializer
 
 
 @pytest.fixture()

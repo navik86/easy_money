@@ -1,43 +1,42 @@
 import decimal
+from collections.abc import Iterable
+from typing import Any, List, Union
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.db.models import Q
 from django.http import Http404
 
-from .models import (
-    BONUSES,
-    DEFAULT_COMMISSION,
-    MAX_NUMBER_OF_WALLETS,
-    Transaction,
-    Wallet,
-)
+from accounts.models import User
+
+from .models import (BONUSES, DEFAULT_COMMISSION, MAX_NUMBER_OF_WALLETS,
+                     Transaction, Wallet)
 
 
-def get_user_wallets(user):
+def get_user_wallets(user: User) -> Iterable[Wallet]:
     user_wallets = user.wallet_set.all()
     return user_wallets
 
 
-def get_specific_user_wallet(user, name: str):
+def get_specific_user_wallet(user: User, name: str) -> Union[Wallet, Http404]:
     try:
         return user.wallet_set.get(name=name)
     except Wallet.DoesNotExist:
         raise Http404
 
 
-def get_specific_wallet(name: str):
+def get_specific_wallet(name: str) -> Union[Wallet, Http404]:
     try:
         return Wallet.objects.get(name=name)
     except Wallet.DoesNotExist:
         raise Http404
 
 
-def delete_specific_wallet(wallet) -> None:
+def delete_specific_wallet(wallet: Wallet) -> None:
     wallet.delete()
 
 
-def create_wallet(user, validated_data):
+def create_wallet(user: User, validated_data) -> Wallet:
     count = Wallet.objects.filter(owner=user).count()
 
     if count >= MAX_NUMBER_OF_WALLETS:
@@ -56,7 +55,7 @@ def create_wallet(user, validated_data):
     return wallet
 
 
-def create_transaction(user, validated_data):
+def create_transaction(user: User, validated_data: dict) -> Transaction:
     sender = validated_data["sender"]
     receiver = validated_data["receiver"]
 
@@ -90,7 +89,7 @@ def create_transaction(user, validated_data):
     return transaction_
 
 
-def get_user_transactions(user):
+def get_user_transactions(user: User) -> List[dict]:
     user_wallets = user.wallet_set.all()
     user_transactions = Transaction.objects.filter(
         Q(receiver__in=user_wallets) | Q(sender__in=user_wallets)
@@ -98,7 +97,7 @@ def get_user_transactions(user):
     return user_transactions
 
 
-def get_specific_transaction(user, transaction_id):
+def get_specific_transaction(user: User, transaction_id: int) -> Union[Transaction, Http404]:
     user_wallets = user.wallet_set.all()
     try:
         transaction = Transaction.objects.filter(
@@ -109,7 +108,7 @@ def get_specific_transaction(user, transaction_id):
         raise Http404
 
 
-def get_wallet_transactions(user, name):
+def get_wallet_transactions(user: User, name: str) -> List[Transaction]:
     wallet = user.wallet_set.get(name=name)
     wallet_transactions = Transaction.objects.filter(
         Q(receiver__name=wallet.name) | Q(sender__name=wallet.name)
