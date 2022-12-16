@@ -18,11 +18,9 @@ def user():
 
 @pytest.fixture
 def user2():
-    user, created = User.objects.get_or_create(
-        email="user2@gmail.com", password="user2user2"
-    )
+    user, created = User.objects.get_or_create(email="user2@gmail.com")
     if created:
-        user.set_password("user1user1")
+        user.set_password("user2user2")
         user.save()
     return user
 
